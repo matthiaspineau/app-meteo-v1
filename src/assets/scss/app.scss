@@ -1,0 +1,68 @@
+@import 'starter/_reboot.scss';
+@import '_forms.scss';
+@import '_loader.scss';
+@import '_navbar.scss';
+@import '_dev.scss';
+@import 'starter/_utility.scss';
+
+*, button {
+    outline: 0;
+} 
+
+body {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+    // background: rgb(22, 22, 22);
+}
+
+#app {
+    // max-width: 400px;
+    margin: 0 auto;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    // color: #2c3e50;
+    // background: rgb(190, 190, 190);
+    background-color: #000;
+    background: rgb(22, 22, 22);
+    color: #fff;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.date {
+    font-size: 0.8rem;
+    color: rgb(83,89,101)
+}
+
+.debug {
+    margin-top: 15px;
+    color: #fff;
+    background: #000;
+}
+
+
+// ----------- Section
+.section {
+    margin: 15px 10px;
+    padding: 5px;
+
+    border: 1px solid #454647;
+    border-radius: 8px;
+}
+// ----------- Section Top
+.section__mid {
+    background: rgb(83,89,101);
+    background: linear-gradient(0deg, rgb(83,89,101) -80%, rgb(22, 22, 22) 80%);
+}
+
+
+// ------------ Section Sun
+.section__bot {
+    background: rgb(59, 59, 59);
+    background: linear-gradient(0deg, rgb(83,89,101) -80%, rgb(22, 22, 22) 130%);
+}

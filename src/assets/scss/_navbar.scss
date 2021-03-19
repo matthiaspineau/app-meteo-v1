@@ -1,0 +1,14 @@
+// ----------- Navbar
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    background: rgb(22, 22, 22);
+    color: #fff;
+
+    h1 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+}
