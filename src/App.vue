@@ -3,37 +3,57 @@
     <!-- Navbar -->
     <nav class="navbar">
       <h1>Méteo</h1>
+       <div class="wrapper__lang">
+        <select  v-model="selectLang">
+          <option value="fr">Fr</option>
+          <option value="en">En</option>
+        </select>
+      </div>
     </nav>
+
+    <!-- <button @click="reqDtDays">test</button> -->
 
     <!-- <div>{{ (1616064213+ 3600)  |toDateFull() }}</div> -->
 
     <!-- Formulaire -->
-    <div class="d-flex mt-2">
-      <div>
-        <input v-model.lazy="city" 
-          type="text"
-          placeholder="entrer votre ville">
+    <div class="wrapper__form">
+      <div class="form">
+        <input 
+        :class="errorCity ? 'error' : '' " 
+        type="text" v-model.lazy="city" 
+        :placeholder="lang.form.placeholder" />
+        <span v-if="errorCity" class="error__text">{{ lang.form.errorText }}</span>
       </div>
       <div>
-        <button @click="getWeathers(formatCity(city))">cliquer</button>
+        <!-- <button @click="getWeathers(formatCity(city))">cliquer</button> -->
+        <button class="btn__call"
+        @click="getWeathers(formatCity(city))">{{ lang.form.btnSearch }}</button>
       </div>
     </div>
 
-    <div>
-      <Carousel @emit-go-day="goDay"></Carousel>
-    </div>
-
+    <!-- Main -->
     <main>
 
-      <section class="section">
-    
-        <Weather :file="localFile.weathers.daily[idDay]"></Weather>
+      <div v-if="showResult">
+        
+        <!-- Carousel -->
+        <Carousel @emit-go-day="goDay" :file="dtDays" :lang="lang"></Carousel>
 
-      </section>
+       
+        <!-- Weather -->
+        <Weather :file="dataWeathers.daily[idDay]" :lang="lang" :city="citySelect"></Weather>
+
+      
+
+      </div>
+      <div v-else>
+        <div class="no__File">
+          pas de resultat
+        </div>
+      </div>
 
     </main>
 
-    <Home></Home>
 
   </div>
 </template>
@@ -41,10 +61,11 @@
 <script>
 import Axios from 'axios';
 import full from '@/assets/full.json'
+import langFr from "@/assets/lang/fr.json";
+import langEn from "@/assets/lang/en.json";
 import Carousel from '@/components/carousel/Carousel.vue'
 import Weather from '@/components/weather/Weather.vue';
-import Home from '@/components/Home.vue';
-// import LoadingWeather from '@/components/weather/LoadingWeather.vue'
+
 // import Table from '@/components/table/Table.vue'
 // const ApiKey = '728e0adecbfd917c5d6a91e18904d29b'
 const coord = [
@@ -99,6 +120,9 @@ export default {
   name: "App",
   data() {
     return {
+      devConfig: {
+        useDevLocalFile: true
+      },
       localFile: {
         coordone: coord,
         weathers: full
@@ -108,22 +132,64 @@ export default {
         urlGeoPoint: 'http://api.openweathermap.org/geo/1.0/direct?',
         urlWeatherDays: 'https://api.openweathermap.org/data/2.5/onecall?exclude=minutely,hourly'
       },
+      showResult: false,
       city: '',
-      resultat: '',
-      reponseApi: true,
-      idDay: 0,   
+      dataWeathers: '',
+      idDay: 0,
+      dtDays: {},
+      carouselItem: {
+        eltActive: 0,
+        eltLast: 0
+      },
+      errorCity: false,
+      selectLang: 'fr',
+      messageErrorAPi: ''  
     };
   },
-  computed: { 
+    computed: {
+    lang() {
+      return this.selectLang == 'fr' ? langFr.lang : langEn.lang
+    },
+    
   },
   methods: {
+    /**
+     * IN DEVELOPMENT
+     * Get file full.json
+     * 
+     */
+    getLocalFileFull() {
+      this.dataWeather = full
+      this.reqDtDays()
+      this.showResult = true
+    },
+    /**
+     * Create Array with dt days 
+     * 
+     * @param {Object}
+     * 
+     * @return {Object}
+     */
+    reqDtDays(file) {
+      let timezone = file.timezone_offset
+      let daily = []
+      file.daily.forEach((element) => {
+        daily.push({ "dt" : element.dt })
+      });
+      this.dtDays = {"timezone" : timezone, "daily": daily}
+      // console.log(this.dtDays)
+    },
     /**
      * Set index of day selected when click of item carousel
      * 
      * @param {object} payload
      */
     goDay(payload) {
-      console.log(payload.message)
+      // console.log(payload)
+      this.carouselItem.eltActive = payload.message
+      document.querySelector('.item[data-id="'+this.carouselItem.eltActive+'"]').classList.add('active')
+      document.querySelector('.item[data-id="'+this.carouselItem.eltLast+'"]').classList.remove('active')
+      this.carouselItem.eltLast = payload.message
       this.idDay = payload.message
     },
     /**
@@ -134,17 +200,39 @@ export default {
      * @return {object}
      */
     getWeathers(city) {
-      Axios.get(this.api.urlGeoPoint + 'q='+city+'&appid='+ this.api.key)
+      if (this.devConfig.useDevLocalFile) {
+        this.dataWeathers = full
+        this.citySelect = coord[0].name
+        this.reqDtDays(this.dataWeathers)
+        this.errorCity = false
+        this.showResult = true
+      } else {
+        Axios.get(this.api.urlGeoPoint + 'q='+city+'&appid='+ this.api.key)
             .then((response) => {
+              // console.log('requete : 1 , corrdonnee')
+              // console.log(response)
               if (response.data.length >= 1) {
-                return Axios.get(this.api.urlWeatherDays + '&lat='+response.data[0].lat+'&lon='+response.data[0].lon+'&appid='+ this.api.key)
-              } 
+                this.citySelect = response.data[0].local_names.eu
+                return Axios.get(this.api.urlWeatherDays + '&lat='+response.data[0].lat+'&lon='+response.data[0].lon+'&exclude=minutely,hourly&lang=fr&units=metric&appid='+ this.api.key)
+              }  else {
+                this.errorCity = true
+              }
               })
             .then((response) => {
-              this.resultat = response.data
-              this.reponseApi = true
+              // console.log('requete : 2 , meteo')
+              // console.log(response)
+              this.dataWeathers = response.data
+              this.reqDtDays(this.dataWeathers)
+              this.showResult = true
+              this.errorCity = false
             })
-            .catch((error) => console.log(error))
+             .catch((error) => {
+              // console.log(error.response);
+              this.messageErrorAPi = error.response
+              this.errorCity = true
+            })
+      }
+      
     },
     /**
      * Get geocoding data of city
@@ -187,7 +275,8 @@ export default {
      * 
      * @return {string}
      */
-    formatCity(city) {
+    formatCity(chaine) {
+      let city = chaine.trim()
       return city.replace(/ /g,'-').toLowerCase()
     }
   },
@@ -199,11 +288,10 @@ export default {
      * 
      * @return {string}
      */
-    toDayString(timestamp) {
-      let date = new Date(timestamp * 1000); // pour obtenir le timeStamp en millisecondes
-      let day = date.getDay(); 
-      let result = day
-      return result
+    toDayString(timestamp, timezone) {
+      let date = new Date((timestamp + timezone) * 1000); // pour obtenir le timeStamp en millisecondes
+      let day = date.getUTCDay();
+      return day
     },
     /**
      * helper 
@@ -232,11 +320,8 @@ export default {
     },
   },
   components: {
-    // Table,
     Carousel,
     Weather,
-    // LoadingWeather
-    Home
   },
 };
 </script>

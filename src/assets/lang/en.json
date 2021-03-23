@@ -11,12 +11,14 @@
             "pressure": "pressure",
             "humidity": "humidity",
             "wind": "wind",
-            "visibility": "visibility"
+            "visibility": "visibility",
+            "uvi": "uvi"
         },
         "sun": {
             "sunrise": "Sunrise",
             "sunset": "Sunset"
         },
-        "load": "Loading"
+        "load": "Loading",
+        "days": ["sunday", "monday", "tuesday ", "wednesday ", "thursday ", "friday ", "saturday "]
     }
 }

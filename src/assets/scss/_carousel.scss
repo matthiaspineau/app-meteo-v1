@@ -1,0 +1,30 @@
+.wrapper__carousel {
+    margin-top: 25px;
+    margin-bottom: 25px;
+  }
+  .item {
+      // width: 165px;
+      padding: 8px 5px;
+      margin: 5px 15px;
+      text-align: center;
+      border-radius: 28px;
+    //   border: 1px solid #000;
+      transition: 0.3s;
+      cursor: pointer;
+  
+      &__day {
+        display: block;
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+  
+      &__date {
+        font-size: 0.8rem
+      }
+  }
+  
+  .item.active {
+    // background: rgb(204, 0, 255);
+    background: $bg-linear-btn;
+    color: $color-white
+  }

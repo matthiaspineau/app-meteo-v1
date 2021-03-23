@@ -10,13 +10,15 @@
             "max": "max °C",
             "pressure": "pression",
             "humidity": "humidité",
-            "wind": "Vent",
-            "visibility": "visibilité"
+            "wind": "vent",
+            "visibility": "visibilité",
+            "uvi": "uv"
         },
         "sun": {
             "sunrise": "lever",
             "sunset": "coucher"
         },
-        "load": "Chargement"
+        "load": "Chargement",
+        "days": ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
     }
 }

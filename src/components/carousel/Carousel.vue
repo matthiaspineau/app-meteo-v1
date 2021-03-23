@@ -1,61 +1,84 @@
 <template>
-  <div>
-
-    <div class="wrapper__carousel">
-      <div class="carousel">
+  <div class="wrapper__carousel">
+      <OwlCarousel :mouseDrag="true" 
+      :nav="false" 
+      :dots="false">
         <div
-          v-for="(item, index) in days"
+          v-for="(item, index) in file.daily"
           :key="index"
           :data-id="index"
           @click="emitGoDay(index)"
           class="item"
+          :class="{ active : index == 0 }"
         >
-          {{ item }}
+        <span class="item__day">{{ item.dt | toDayString(lang.days) }}</span>
+        <span class="item__date">{{ item.dt | toDateNumeric(file.timezone) }}</span>
         </div>
-      </div>
-    </div>
+      </OwlCarousel>  
   </div>
 </template>
 
 <script>
+import OwlCarousel from 'vue-owl-carousel'
+
+
+
 export default {
   name: "Carousel",
   props: {
-    days: {
-      type: Number,
-      default: 7,
+    file: {
+      type: Object,
+      default: function () {
+        return {}
+      }
     },
+    lang: {
+      type: Object,
+        default: function () {
+        return { }
+        }
+    }
   },
   methods: {
     emitGoDay(index) {
-      this.$emit("emit-go-day", { message: index });
+      // document.querySelector('.item[data-id="'+this.lastIndex+'"]').classList.remove('active')
+      // e.target.classList.add('active')
+      this.$emit("emit-go-day", { message: index});
     },
   },
+  /**
+   * get day name in day of week
+   * 
+   * @param {number} timestamp
+   * @param {array} tab
+   * 
+   * @return {string}
+   */
+  filters: {
+    toDayString(timestamp, tab) {
+      let date = new Date(timestamp * 1000); // pour obtenir le timeStamp en millisecondes
+      let day = date.getUTCDay();
+      return tab[day]
+    },
+    /**
+     * helper 
+     * 
+     * @param {number} timestamp
+     * 
+     * @return {string}
+     */
+    toDateNumeric (timestamp, timezone) {
+      let date = new Date((timestamp - timezone )* 1000);
+      let jour = date.getUTCDate(); 
+      let mois = date.getUTCMonth(); 
+      mois = mois + 1
+      mois = mois.toString().length > 1 ? mois.toString() : '0' + mois
+      let result = jour +"/"+ mois
+      return result
+    },
+  },
+  components: {
+    OwlCarousel
+  }
 };
 </script>
-
-<style lang="scss" scoped>
-.wrapper__carousel {
-  max-width: 200px;
-  margin: 0 auto;
-  padding-left: 25px;
-  padding-right: 25px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  overflow-x: hidden;
-  border: 1px solid black;
-}
-
-.carousel {
-  display: flex;
-  width: 100%;
-
-  .item {
-    width: 165px;
-    padding: 8px;
-    margin: 5px;
-    border-radius: 5px;
-    border: 1px solid #000;
-  }
-}
-</style>
