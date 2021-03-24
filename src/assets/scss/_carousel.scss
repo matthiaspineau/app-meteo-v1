@@ -26,5 +26,6 @@
   .item.active {
     // background: rgb(204, 0, 255);
     background: $bg-linear-btn;
-    color: $color-white
+    color: $color-white;
+    // box-shadow: 0px 1px 5px rgba(69,75,252,1);
   }

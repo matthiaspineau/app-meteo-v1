@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="development">
+  <div id="app" class="">
     <!-- Navbar -->
     <nav class="navbar">
       <h1>Méteo</h1>
@@ -10,8 +10,6 @@
         </select>
       </div>
     </nav>
-
-    <!-- <button @click="reqDtDays">test</button> -->
 
     <!-- <div>{{ (1616064213+ 3600)  |toDateFull() }}</div> -->
 
@@ -25,9 +23,8 @@
         <span v-if="errorCity" class="error__text">{{ lang.form.errorText }}</span>
       </div>
       <div>
-        <!-- <button @click="getWeathers(formatCity(city))">cliquer</button> -->
         <button class="btn__call"
-        @click="getWeathers(formatCity(city))">{{ lang.form.btnSearch }}</button>
+        @click="getWeathers(city)">{{ lang.form.btnSearch }}</button>
       </div>
     </div>
 
@@ -44,12 +41,12 @@
         <Weather :file="dataWeathers.daily[idDay]" :lang="lang" :city="citySelect"></Weather>
 
       
+        <!-- Sun -->
+        <Sun :file="dataWeathers.daily[idDay]" :lang="lang.sun" :timezone="timezone"></Sun>
 
       </div>
       <div v-else>
-        <div class="no__File">
-          pas de resultat
-        </div>
+        <Waiting  :lang="lang.waiting"></Waiting>
       </div>
 
     </main>
@@ -65,9 +62,9 @@ import langFr from "@/assets/lang/fr.json";
 import langEn from "@/assets/lang/en.json";
 import Carousel from '@/components/carousel/Carousel.vue'
 import Weather from '@/components/weather/Weather.vue';
+import Waiting from '@/components/Waiting.vue';
+import Sun from '@/components/sun/Sun.vue';
 
-// import Table from '@/components/table/Table.vue'
-// const ApiKey = '728e0adecbfd917c5d6a91e18904d29b'
 const coord = [
     {
         "name": "Paris",
@@ -121,7 +118,7 @@ export default {
   data() {
     return {
       devConfig: {
-        useDevLocalFile: true
+        useDevLocalFile: false
       },
       localFile: {
         coordone: coord,
@@ -143,11 +140,16 @@ export default {
       },
       errorCity: false,
       selectLang: 'fr',
-      messageErrorAPi: ''  
+      messageErrorAPi: '',
+      timezone: '' 
     };
   },
     computed: {
     lang() {
+      if (this.showResult) {
+        console.log('requete du au changement de langue')
+        this.getWeathers(this.city)
+      }
       return this.selectLang == 'fr' ? langFr.lang : langEn.lang
     },
     
@@ -177,7 +179,6 @@ export default {
         daily.push({ "dt" : element.dt })
       });
       this.dtDays = {"timezone" : timezone, "daily": daily}
-      // console.log(this.dtDays)
     },
     /**
      * Set index of day selected when click of item carousel
@@ -200,20 +201,22 @@ export default {
      * @return {object}
      */
     getWeathers(city) {
+      let citie = this.formatCity(city)
       if (this.devConfig.useDevLocalFile) {
         this.dataWeathers = full
         this.citySelect = coord[0].name
         this.reqDtDays(this.dataWeathers)
         this.errorCity = false
         this.showResult = true
+        this.timezone = this.dataWeathers.timezone_offset
       } else {
-        Axios.get(this.api.urlGeoPoint + 'q='+city+'&appid='+ this.api.key)
+        Axios.get(this.api.urlGeoPoint+'q='+citie+'&appid='+this.api.key)
             .then((response) => {
-              // console.log('requete : 1 , corrdonnee')
+              // console.log('requete : 1 , coordonnee')
               // console.log(response)
               if (response.data.length >= 1) {
                 this.citySelect = response.data[0].local_names.eu
-                return Axios.get(this.api.urlWeatherDays + '&lat='+response.data[0].lat+'&lon='+response.data[0].lon+'&exclude=minutely,hourly&lang=fr&units=metric&appid='+ this.api.key)
+                return Axios.get(this.api.urlWeatherDays +'&lat='+response.data[0].lat+'&lon='+response.data[0].lon+'&exclude=minutely,hourly&lang='+this.selectLang+'&units=metric&appid='+this.api.key)
               }  else {
                 this.errorCity = true
               }
@@ -223,6 +226,7 @@ export default {
               // console.log(response)
               this.dataWeathers = response.data
               this.reqDtDays(this.dataWeathers)
+              this.timezone = this.dataWeathers.timezone_offset
               this.showResult = true
               this.errorCity = false
             })
@@ -269,7 +273,7 @@ export default {
             .catch((error) => console.log(error))
     },
     /**
-     * helper 
+     * helper : format string
      * 
      * @param {string} city
      * 
@@ -322,6 +326,8 @@ export default {
   components: {
     Carousel,
     Weather,
+    Waiting,
+    Sun
   },
 };
 </script>

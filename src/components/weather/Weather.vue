@@ -1,6 +1,6 @@
 <template>
 <transition name="fade" appear>
-    <div class="section">
+    <div class="section bg__lg">
         <div class="top">
           <h2 class="title">{{ city }}</h2>
 
@@ -21,35 +21,35 @@
         <div class="wrapper__table">
         <div class="table">
           <div class="table__card">
-            <SvgMinTemp :color="'#000'"></SvgMinTemp>
+            <SvgMinTemp></SvgMinTemp>
             <span class="valeur">{{ file.temp.min }} °</span>
             <span class="small">{{ lang.table.min }}</span>
           </div>
           <div class="table__card">
-            <SvgMaxTemp :color="'#000'"></SvgMaxTemp>
+            <SvgMaxTemp></SvgMaxTemp>
             <span class="valeur">{{ file.temp.max }} °</span>
             <span class="small">{{ lang.table.max }}</span>
           </div>
           <div class="table__card">
-            <SvgBarometer :color="'#000'"></SvgBarometer>
+            <SvgBarometer></SvgBarometer>
             <span class="valeur">{{ file.pressure }}</span>
             <span class="small">{{ lang.table.pressure }}</span>
           </div>
 
           <div class="table__card">
-            <SvgDrop :color="'#000'"></SvgDrop>
+            <SvgDrop></SvgDrop>
             <span class="valeur">{{ file.humidity}} %</span>
             <span class="small">{{ lang.table.humidity }}</span>
           </div>
 
           <div class="table__card">
-            <SvgWind :color="'#000'"></SvgWind>
+            <SvgWind></SvgWind>
             <span class="valeur">{{ file.wind_speed }} km/h</span>
             <span class="small">{{ lang.table.wind }}</span>
           </div>
 
           <div class="table__card">
-            <SvgVisibility :color="'#000'"></SvgVisibility>
+            <SvgVisibility></SvgVisibility>
             <span class="valeur">{{ file.uvi }}</span>
             <span class="small">{{ lang.table.uvi }}</span>
           </div>
@@ -117,6 +117,8 @@ export default {
     &__text {
        width: 50%;
        padding: 5px;
+       padding-top: 15px;
+       padding-left: 15px;
 
       .desc {
         // color: green
@@ -124,7 +126,8 @@ export default {
 
       .temp {
         // color: blue
-        font-size: 4.5rem;
+        font-size: 5.6rem;
+        line-height: 5.7rem;
       }
 
     }
@@ -136,6 +139,8 @@ export default {
 
     display: flex;
     flex-wrap: wrap;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
 
     &__card {

@@ -19,6 +19,7 @@
             "sunset": "coucher"
         },
         "load": "Chargement",
-        "days": ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
+        "days": ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
+        "waiting": "Récuperer la meteo des 7 prochains jour"
     }
 }

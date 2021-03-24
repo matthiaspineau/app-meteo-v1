@@ -19,6 +19,8 @@
             "sunset": "Sunset"
         },
         "load": "Loading",
-        "days": ["sunday", "monday", "tuesday ", "wednesday ", "thursday ", "friday ", "saturday "]
+        "days": ["sunday", "monday", "tuesday ", "wednesday ", "thursday ", "friday ", "saturday "],
+        "waiting": "Retrieve the weather for the next 7 days"
+
     }
 }
