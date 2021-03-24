@@ -1,3 +1,8 @@
+app-meteo: Projet permettant la récupération de donnée météorologique.
+API utilisé: "OpenWeather"
+Projet prévue pour une utilisation sur mobile
+
+
 # app-meteo-v1
 
 ## Project setup
